@@ -12,9 +12,6 @@ import numpy as np
 import pandas as pd
 
 
-# path = 'D:/Organoid_Data/ATP_estimate_1'
-
-
 def fine_big(contours):
     ans = [0, 0, 0, 0]
     for c in contours:
@@ -41,7 +38,6 @@ def fine_mask(image):
 
 if __name__ == '__main__':
     path = 'D:/Organoid_Data/ATP_estimate_3'
-    # path = 'D:/Organoid_Data/test'
     annos = []
     for root, _, names in os.walk(path):
         if root == path:

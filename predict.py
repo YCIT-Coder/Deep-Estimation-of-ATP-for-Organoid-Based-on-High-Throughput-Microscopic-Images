@@ -1,11 +1,3 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-# @File  : predict.py
-# @Author: Xuesheng Bian
-# @Email: xbc0809@gmail.com
-# @Date  :  2021/10/11 14:42
-# @Desc  :
-
 from torchvision.transforms import Compose, Resize, ToTensor, ToPILImage, \
     Normalize
 from Data.crop_image import fine_mask

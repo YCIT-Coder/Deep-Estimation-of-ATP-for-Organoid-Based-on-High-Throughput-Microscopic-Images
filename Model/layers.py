@@ -1,12 +1,3 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-# @File  : layers.py
-# @Author: Xuesheng Bian
-# @Email: xbc0809@gmail.com
-# @Date  :  2021/6/16 23:08
-# @Desc  :
-
-
 import torch
 import torch.nn as nn
 

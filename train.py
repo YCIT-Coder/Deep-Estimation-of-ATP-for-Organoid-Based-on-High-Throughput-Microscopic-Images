@@ -1,15 +1,7 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-# @File  : train_binary_MIL_benchmark.py
-# @Author: Xuesheng Bian
-# @Email: xbc0809@gmail.com
-# @Date  :  2021/12/6 15:33
-# @Desc  :
-
 import os
 import torch
 import argparse
-from Model.MIL_Benchmarks import MILCovid19, AD2D_MIL, DACMIL
+from Model.MIL_Benchmarks import MeshIns, DeepIns
 from Losses.regression import MSELoss, CascadeLoss
 from Data.Organoid import OrganoidBinary, ATPMaper
 from torch.utils.data import DataLoader
@@ -36,10 +28,10 @@ args = parser.parse_args()
 
 
 def set_seed(seed):
-    torch.manual_seed(seed)  # cpu 为CPU设置种子用于生成随机数，以使得结果是确定的
-    torch.cuda.manual_seed(seed)  # gpu 为当前GPU设置随机种子
-    torch.backends.cudnn.deterministic = True  # cudnn
-    np.random.seed(seed)  # numpy
+    torch.manual_seed(seed) 
+    torch.cuda.manual_seed(seed)  
+    torch.backends.cudnn.deterministic = True 
+    np.random.seed(seed) 
     random.seed(seed)
 
 
@@ -67,12 +59,10 @@ val_loader = DataLoader(val_data, args.batch, shuffle=True, num_workers=1)
 patch_size = args.size // np.int32(np.sqrt(args.patch))
 
 if args.bb == '0':
-    net = MILCovid19(in_channel=3, out_channel=32, category=bit, patches=args.patch, num_layers=5, num_stack=6,
+    net = MeshIns(in_channel=3, out_channel=32, category=bit, patches=args.patch, num_layers=5, num_stack=6,
                      image_size=args.size // int(np.sqrt(args.patch)))
 elif args.bb == "1":
-    net = AD2D_MIL(in_channel=3, hidden=512, category=bit, num_layer=5, image_size=args.size, patches=args.patch)
-elif args.bb == "2":
-    net = DACMIL(category=bit, patches=args.patch, image_size=args.size // int(np.sqrt(args.patch)))
+    net = DeepIns(in_channel=3, hidden=512, category=bit, num_layer=5, image_size=args.size, patches=args.patch)
 
 # define loss
 loss_f = CascadeLoss(weight_decay=0.5, bit=train_data.bit, margin=0.3)

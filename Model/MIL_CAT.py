@@ -1,26 +1,12 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-# @File  : MIL_CAT.py
-# @Author: Xuesheng Bian
-# @Email: xbc0809@gmail.com
-# @Date  :  2021/12/17 10:45
-# @Desc  :
-
 import torch
 import torch.nn as nn
-from Model.layers import Conv2D, ResBlock, Attention
-from torchvision.models import resnet34
+from Model.layers import Conv2D, Attention
 import numpy as np
 
 
-class MILCovid19(nn.Module):
-    """
-    A novel multiple instance learning framework for COVID-19 severity assessment via data augmentation and self-supervised learning
-    """
-
+class MeshIns(nn.Module):
     def __init__(self, in_channel, out_channel, category, patches, num_layers, num_stack, image_size):
-        """Constructor for MILCovid19"""
-        super(MILCovid19, self).__init__()
+        super(MeshIns, self).__init__()
         self.patches = patches
         self.image_size = image_size
         feature_extractor = []
@@ -72,14 +58,9 @@ class MILCovid19(nn.Module):
         return out
 
 
-class AD2D_MIL(nn.Module):
-    """
-    Accurate Screening of COVID-19 Using Attention-Based Deep 3D Multiple Instance Learning
-    """
-
+class DeepIns(nn.Module):
     def __init__(self, in_channel, hidden, category, num_layer, image_size, patches=64):
-        """Constructor for AD2D_MIL"""
-        super(AD2D_MIL, self).__init__()
+        super(DeepIns, self).__init__()
         feature_extractor = []
         temp = int(np.log2(patches)) // 2
         num_layer = 9 - temp
@@ -124,79 +105,5 @@ class AD2D_MIL(nn.Module):
         return out
 
 
-class DACMIL(nn.Module):
-    """
-    Dual attention multiple instance learning with unsupervised complementary loss for COVID-19 screening
-    """
-
-    def __init__(self, category, patches, image_size=128):
-        """Constructor for DACMIL"""
-        super(DACMIL, self).__init__()
-        layers = list(resnet34(pretrained=False).children())[:-2]
-        self.patches = patches
-        self.image_size = image_size
-        self.feature_extractor = nn.Sequential(*layers)
-        self.AS = nn.Sequential(
-            Conv2D(512, 256),
-            nn.Tanh(),
-            Conv2D(256, 512),
-            nn.Sigmoid(),
-            Conv2D(512, 256),
-            Conv2D(256, 1),
-        )
-        self.pool = nn.AdaptiveAvgPool2d(1)
-        self.AI = nn.Sequential(
-            nn.Linear(512, 256),
-            nn.Tanh(),
-            nn.Linear(256, 512),
-            nn.Sigmoid(),
-            Attention(512, 512, patches)
-        )
-        self.classifier = nn.Sequential(
-            nn.Linear(512, 256),
-            nn.BatchNorm1d(256),
-            nn.ReLU(),
-            nn.Linear(256, 128),
-            nn.BatchNorm1d(128),
-            nn.ReLU(),
-            nn.Linear(128, category),
-            nn.Sigmoid(),
-        )
-
-    def forward(self, x):
-        x = x.view(x.size(0), x.size(1), np.int32(np.sqrt(self.patches)),
-                   self.image_size, np.int32(np.sqrt(self.patches)),
-                   self.image_size)
-        x = x.permute(0, 2, 4, 1, 3, 5)
-        x = x.contiguous()
-        x = x.view(x.size(0), -1, x.size(-3), x.size(-2), x.size(-1))
-        if x.size(2) == 1:
-            x = x.expand(x.size(0), x.size(1), 3, x.size(3), x.size(4))
-        x_flatten = x.view(-1, x.size(2), x.size(3), x.size(4))
-        out = self.feature_extractor(x_flatten)
-        att1 = self.AS(out).expand(*out.size())
-        out = out * att1
-        out = self.pool(out)
-        out = out.view(out.size(0), out.size(1))
-        att2 = self.AI(out).unsqueeze(-1)
-        out = out.view(-1, x.size(1), out.size(-1))
-        out = out * att2
-        out = torch.sum(out, 1)
-        out = self.classifier(out).squeeze(-1)
-        return out
-
-
 if __name__ == '__main__':
-    # x = torch.randn(10, 10, 3, 32, 32)
-    import torchsummary
-
-    image_size = 512
-    x = torch.randn(10, 3, image_size, image_size)
-    patch = 256
-    # net = MILCovid19(in_channel=3, out_channel=512, category=5, patches=patch, num_layers=5, num_stack=6,
-    #                  image_size=image_size // int(np.sqrt(patch)))
-    net = AD2D_MIL(in_channel=3, hidden=512, category=5, num_layer=5, image_size=512, patches=patch)
-    # net = DACMIL(category=5, patches=16, image_size=512 // 4)
-    torchsummary.summary(net, (3, image_size, image_size))
-    # y = net(x)
-    # print(y)
+    pass

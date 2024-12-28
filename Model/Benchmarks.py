@@ -1,11 +1,3 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-# @File  : Benchmarks.py
-# @Author: Xuesheng Bian
-# @Email: xbc0809@gmail.com
-# @Date  :  2021/8/2 16:19
-# @Desc  :
-
 import torch
 import torch.nn as nn
 from torchvision.models import vgg16, resnet18, inception_v3, GoogLeNet, resnet34

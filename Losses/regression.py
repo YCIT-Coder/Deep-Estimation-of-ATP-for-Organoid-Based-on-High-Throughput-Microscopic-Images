@@ -14,10 +14,6 @@ import numpy as np
 
 
 class WeightedMSELoss(nn.Module):
-    """
-    根据对比损失加权
-    """
-
     def __init__(self, weight=False):
         """Constructor for WeightedMSELoss"""
         super(WeightedMSELoss, self).__init__()
@@ -33,7 +29,7 @@ class WeightedMSELoss(nn.Module):
         if self.weight:
             target_dist = ((target - target.T) >= 0).float()
             pred_dist = ((pred - pred.T) >= 0).float()
-            mask = 1 - (target_dist == pred_dist).float()  # 位置出错的样本
+            mask = 1 - (target_dist == pred_dist).float() 
             mask = torch.triu(mask, diagonal=1)
             margin = torch.abs(pred - target)
             margin = ((margin - margin.T) > 0).float()
@@ -54,7 +50,7 @@ class CascadeLoss(nn.Module):
     def __init__(self, weight_decay=0.9, bit=11, margin=0.3):
         """Constructor for CascadeLoss"""
         super(CascadeLoss, self).__init__()
-        self.weight_decay = -np.log(1.0 / weight_decay - 1)  # weight_decay ~ 1 用sigmoid控制
+        self.weight_decay = -np.log(1.0 / weight_decay - 1) 
         self.bce_loss = nn.BCELoss(reduction='none')
         self.mse_loss = nn.MSELoss(reduction='none')
         self.bit = bit
@@ -91,7 +87,7 @@ class BinaryLoss(nn.Module):
     def __init__(self, weight_decay=0.9, bit=11, margin=0.3):
         """Constructor for CascadeLoss"""
         super(BinaryLoss, self).__init__()
-        self.weight_decay = -np.log(1.0 / weight_decay - 1)  # weight_decay ~ 1 用sigmoid控制
+        self.weight_decay = -np.log(1.0 / weight_decay - 1)  
         self.bce_loss = nn.BCELoss(reduction='none')
         self.mse_loss = nn.MSELoss(reduction='none')
         self.bit = bit
@@ -123,10 +119,10 @@ class BinaryLoss(nn.Module):
 
 
 def set_seed(seed):
-    torch.manual_seed(seed)  # cpu 为CPU设置种子用于生成随机数，以使得结果是确定的
-    torch.cuda.manual_seed(seed)  # gpu 为当前GPU设置随机种子
+    torch.manual_seed(seed)  
+    torch.cuda.manual_seed(seed) 
     torch.backends.cudnn.deterministic = True  # cudnn
-    np.random.seed(seed)  # numpy
+    np.random.seed(seed)  
     random.seed(seed)
 
 
